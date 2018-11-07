@@ -6,10 +6,16 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import CameraScreen from '../screens/CameraScreen';
 
-const HomeStack = createStackNavigator({
-  Home: HomeScreen,
-});
+const HomeStack = createStackNavigator(
+  {
+    Home: HomeScreen,
+    Camera: CameraScreen
+  },
+  {
+    mode: 'modal'
+  });
 
 HomeStack.navigationOptions = {
   tabBarLabel: 'Home',
