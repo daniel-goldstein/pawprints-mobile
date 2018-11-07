@@ -91,18 +91,12 @@ export default class HomeScreen extends React.Component {
         'Complete',
         message,
         [
-          // {text: 'Mark that clue', onPress: () => this.toggleClueCompleted(clue)},
           {text: 'Mark that clue', onPress: () => this.pushCamera(clue)},
           {text: 'Cancel', onPress: () => console.log("canceled"), style: 'cancel'}
         ],
         { cancelable: true }
       );
     }
-  };
-
-  toggleClueCompleted = (clue) => {
-    cluesRef.child(clue.key).update({completed: !clue.completed});
-    cluesRef.post(clue)
   };
 
   pushCamera = (clue) => {

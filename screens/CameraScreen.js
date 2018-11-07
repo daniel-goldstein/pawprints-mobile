@@ -1,11 +1,10 @@
 import React from 'react'
 import { Camera, Permissions } from 'expo';
 import {
-  Platform, View, Text, TouchableOpacity,
-  Dimensions, ImageBackground, StyleSheet
+  Platform, View, Dimensions, ImageBackground, StyleSheet, Alert
 } from 'react-native';
 
-import { Button, Icon } from 'native-base';
+import { Button, Icon, Text } from 'native-base';
 
 import { storageRef, cluesRef } from "../fire";
 
@@ -49,21 +48,29 @@ export default class CameraScreen extends React.Component {
   }
 
   renderPhotoPreview() {
+    const photo = this.state.photo;
+
     return (
-      <View>
-        <ImageBackground style={{width: screenWidth, height: screenHeight}}
-                         source={{uri: `data:image/jpg;base64, ${this.state.photo.base64}`}}>
+      <View style={{ flex: 1 }}>
+        <ImageBackground style={{flex: 1, width: screenWidth, height: screenHeight}}
+                         source={{uri: `data:image/jpg;base64, ${photo.base64}`}}>
+
           <View style={styles.topBar}>
-            <TouchableOpacity onPress={this.cancelPhotoPreview}>
-              <Icon name='ios-close-circle' />
-            </TouchableOpacity>
+            <View style={styles.topLeftButton}>
+              <Button small light transparent onPress={this.cancelPhotoPreview}>
+                <Icon name='ios-close-circle' />
+              </Button>
+            </View>
           </View>
 
           <View style={styles.bottomBar}>
-            <Button success iconRight onPress={this.uploadPhoto}>
-              <Icon name='ios-arrow-forward' />
-            </Button>
+            <View style={styles.sendButton}>
+              <Button success rounded onPress={() => this.uploadPhoto(photo)}>
+                <Icon light name='ios-arrow-forward' />
+              </Button>
+            </View>
           </View>
+
         </ImageBackground>
       </View>
     );
@@ -75,116 +82,101 @@ export default class CameraScreen extends React.Component {
         <Camera style={{ flex: 1 }}
                 type={this.state.type}
                 ref={ cam => this.camera = cam }>
-          <View style={{
-            flex: 1,
-            backgroundColor: 'transparent',
-            flexDirection: 'row',
-          }}>
-            <Button danger onPress={() => this.props.navigation.pop()}
-                    style={{height: 30, width: 30}}>
-            </Button>
-            <TouchableOpacity
-              style={{
-                flex: 0.1,
-                alignSelf: 'flex-end',
-                alignItems: 'center',
-              }}
-              onPress={() => {
-                this.setState({
-                  type: this.state.type === Camera.Constants.Type.back
-                    ? Camera.Constants.Type.front
-                    : Camera.Constants.Type.back,
-                });
-              }}>
-              <Text
-                style={{ fontSize: 18, marginBottom: 10, color: 'white' }}>
-                {' '}Flip{' '}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                flex: 0.1,
-                alignSelf: 'flex-end',
-                alignItems: 'center',
-              }}
-              onPress={this.snap}
-            >
-              <Text
-                style={{ fontSize: 18, marginBottom: 10, color: 'white' }}>
-                {' '}Capture{' '}
-              </Text>
-            </TouchableOpacity>
+
+          <View style={styles.topBar}>
+            <View style={styles.topLeftButton}>
+              <Button small light rounded onPress={this.flipCamera}>
+                <Icon name="camera" />
+              </Button>
+            </View>
           </View>
+
+          <View style={styles.bottomBar}>
+            <View style={styles.cameraButton}>
+              <Button large warning rounded onPress={this.snapPhoto}>
+                <Text>Say T-Time!</Text>
+              </Button>
+            </View>
+          </View>
+
         </Camera>
       </View>
     );
   }
 
-  cancelPhotoPreview = () => {
-    this.setState({photo: null});
-  };
-
-  uploadPhoto = async () => {
-    const photoFromUri = await fetch(this.state.photo.uri);
+  uploadPhoto = async (photo) => {
+    const photoFromUri = await fetch(photo.uri);
     const photoBlob = await photoFromUri.blob();
 
     //Upload photo to firebase
     storageRef.child('asdf').put(photoBlob);
+
+
+    let clue = this.props.navigation.getParam('clue');
     // Set the clue to completed
-    cluesRef.child(this.props.clue.key).update({completed: !this.props.clue.completed});
+    cluesRef.child(clue.key).update({completed: true});
 
     //Get rid of the photo from state
     this.cancelPhotoPreview();
   };
 
-  snap = async () => {
+  cancelPhotoPreview = () => {
+    this.setState({photo: null});
+  };
+
+  snapPhoto = async () => {
     if (this.camera) {
       let photo = await this.camera.takePictureAsync({base64: true});
 
       this.setState({ photo });
     }
-  }
+  };
+
+  flipCamera = () => {
+    this.setState({
+      type: this.state.type === Camera.Constants.Type.back
+        ? Camera.Constants.Type.front
+        : Camera.Constants.Type.back,
+    });
+  };
 }
 
 const styles = StyleSheet.create({
   MainContainer: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-  },
-
-  topBar: {
-      display: 'flex',
-      flex: 1,
-      justifyContent: 'flex-start',
-      alignItems: 'flex-start'
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   bottomBar: {
-      display: 'flex',
-      flex: 1,
-      justifyContent: 'flex-end',
-      alignItems: 'flex-end'
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-end' // Sets children at bottom of box
+  },
+
+  cameraButton: {
+    justifyContent: 'center',
+    marginBottom: 30
+  },
+
+  sendButton: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+    marginRight: 30,
+    marginBottom: 30,
+    alignSelf: 'flex-end'
+  },
+
+  topBar: {
+    flex: 1,
+    flexDirection: 'row', //Default for react native is column
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start'
   },
 
   topLeftButton: {
-      paddingTop: ( Platform.OS === 'ios' ) ? 40 : 0,
-      paddingLeft: 10
+    paddingTop: ( Platform.OS === 'ios' ) ? 40 : 0,
+    paddingLeft: 20
   },
-
-  bottomView: {
-      width: '20%',
-      height: '20%',
-      paddingBottom: 100,
-      backgroundColor: '#FF9800',
-      justifyContent: 'flex-end',
-      alignItems: 'flex-end',
-      bottom: 0,
-      right: 0
-  },
-
-  textStyle: {
-      color: '#fff',
-      fontSize: 22
-  }
 });
