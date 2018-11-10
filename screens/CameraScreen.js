@@ -4,7 +4,7 @@ import {
   Platform, View, ImageBackground, StyleSheet, Alert, CameraRoll
 } from 'react-native';
 
-import { Button, Icon, Text } from 'native-base';
+import { Button, Icon, Text, Spinner } from 'native-base';
 
 import { storageRef, cluesRef } from "../fire";
 import layout from '../constants/Layout';
@@ -21,7 +21,8 @@ export default class CameraScreen extends React.Component {
     this.state = {
       hasCameraPermission: null,
       type: Camera.Constants.Type.front,
-      photo: null
+      photo: null,
+      sending: false
     };
   }
 
@@ -51,6 +52,8 @@ export default class CameraScreen extends React.Component {
       <View style={{ flex: 1 }}>
         <ImageBackground style={{flex: 1, width: layout.window.width, height: layout.window.height}}
                          source={{uri: `data:image/jpg;base64, ${photo.base64}`}}>
+
+          {this.state.sending ? <Spinner style={styles.centerScreen}/> : undefined}
 
           <View style={styles.topBar}>
             <View style={styles.topLeftButton}>
@@ -103,15 +106,23 @@ export default class CameraScreen extends React.Component {
 
   uploadPhotoAndMarkCompleted = async (photo) => {
     try {
+      this.toggleSending();
+
       CameraRoll.saveToCameraRoll(photo.uri, 'photo');
       await this.uploadToFirebase(photo.uri);
       await this.markClueCompleted();
+
+      this.toggleSending();
       this.cancelPhotoPreview();
     } catch (e) {
       console.error(e);
       Alert.alert('Oh no! Something went wrong. Please take another picture');
     }
   };
+
+  toggleSending() {
+    this.setState({sending: !this.state.sending});
+  }
 
   async uploadToFirebase(photoUri) {
     let clue = this.props.navigation.getParam('clue');
@@ -181,4 +192,10 @@ const styles = StyleSheet.create({
     paddingTop: ( Platform.OS === 'ios' ) ? 40 : 0,
     paddingLeft: 20
   },
+
+  centerScreen: {
+    position: 'absolute',
+    paddingTop: layout.window.height / 2,
+    paddingLeft: layout.window.width / 2
+  }
 });

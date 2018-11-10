@@ -2,7 +2,7 @@ import React from 'react';
 import { Alert, View } from 'react-native';
 import { MapView } from 'expo';
 
-import { Button, Text } from 'native-base';
+import { ButtonGroup } from 'react-native-elements';
 
 import { cluesRef } from "../fire";
 import Clue from "../components/Clue";
@@ -10,12 +10,6 @@ import Clue from "../components/Clue";
 // Controls initial zoom of the map
 const LATITUDE_DELTA = 0.06;
 const LONGITUDE_DELTA = 0.06;
-
-const SHOW_CLUES = {
-  ALL: 'show-clues-all',
-  COMPLETED: 'show-clues-completed',
-  UNCOMPLETED: 'show-clues-uncompleted'
-};
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -29,7 +23,7 @@ export default class HomeScreen extends React.Component {
       isLoading: true,
       clues: [],
       region: null,
-      showClues: SHOW_CLUES.ALL
+      clueVisibilitySelectedIndex: 0
     };
   }
 
@@ -44,8 +38,11 @@ export default class HomeScreen extends React.Component {
         >
           {this.renderClues()}
         </MapView>
-        <Button>
-        </Button>
+        <ButtonGroup
+          onPress={(index) => this.setState({clueVisibilitySelectedIndex: index})}
+          selectedIndex={this.state.clueVisibilitySelectedIndex}
+          buttons={['All', 'Completed', 'Uncompleted']}
+        />
       </View>
     )
   }
@@ -89,17 +86,17 @@ export default class HomeScreen extends React.Component {
 
   renderClues() {
     const allClues = this.state.clues;
-    const showClues = this.state.showClues;
+    const clueVisibilitySelectedIndex = this.state.clueVisibilitySelectedIndex;
     let cluesToShow = [];
 
-    switch (showClues) {
-      case SHOW_CLUES.ALL:
+    switch (clueVisibilitySelectedIndex) {
+      case 0: // All
         cluesToShow = allClues;
         break;
-      case SHOW_CLUES.COMPLETED:
+      case 1: // Completed
         cluesToShow = allClues.filter(clue => clue.completed);
         break;
-      case SHOW_CLUES.UNCOMPLETED:
+      case 2: // Uncompleted
         cluesToShow = allClues.filter(clue => !clue.completed);
         break;
       default:
