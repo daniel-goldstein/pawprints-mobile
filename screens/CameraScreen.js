@@ -1,16 +1,13 @@
 import React from 'react'
 import { Camera, Permissions } from 'expo';
 import {
-  Platform, View, Dimensions, ImageBackground, StyleSheet, Alert
+  Platform, View, ImageBackground, StyleSheet, Alert, CameraRoll
 } from 'react-native';
 
-import { Button, Icon, Text } from 'native-base';
+import { Button, Icon, Text, Spinner } from 'native-base';
 
 import { storageRef, cluesRef } from "../fire";
-
-
-const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
+import layout from '../constants/Layout';
 
 export default class CameraScreen extends React.Component {
     static navigationOptions = {
@@ -24,7 +21,8 @@ export default class CameraScreen extends React.Component {
     this.state = {
       hasCameraPermission: null,
       type: Camera.Constants.Type.front,
-      photo: null
+      photo: null,
+      sending: false
     };
   }
 
@@ -52,8 +50,10 @@ export default class CameraScreen extends React.Component {
 
     return (
       <View style={{ flex: 1 }}>
-        <ImageBackground style={{flex: 1, width: screenWidth, height: screenHeight}}
+        <ImageBackground style={{flex: 1, width: layout.window.width, height: layout.window.height}}
                          source={{uri: `data:image/jpg;base64, ${photo.base64}`}}>
+
+          {this.state.sending ? <Spinner style={styles.centerScreen}/> : undefined}
 
           <View style={styles.topBar}>
             <View style={styles.topLeftButton}>
@@ -65,7 +65,7 @@ export default class CameraScreen extends React.Component {
 
           <View style={styles.bottomBar}>
             <View style={styles.sendButton}>
-              <Button success rounded onPress={() => this.uploadPhoto(photo)}>
+              <Button success rounded onPress={() => this.uploadPhotoAndMarkCompleted(photo)}>
                 <Icon light name='ios-arrow-forward' />
               </Button>
             </View>
@@ -104,21 +104,40 @@ export default class CameraScreen extends React.Component {
     );
   }
 
-  uploadPhoto = async (photo) => {
-    const photoFromUri = await fetch(photo.uri);
+  uploadPhotoAndMarkCompleted = async (photo) => {
+    try {
+      this.toggleSending();
+
+      CameraRoll.saveToCameraRoll(photo.uri, 'photo');
+      await this.uploadToFirebase(photo.uri);
+      await this.markClueCompleted();
+
+      this.toggleSending();
+      this.cancelPhotoPreview();
+    } catch (e) {
+      console.error(e);
+      Alert.alert('Oh no! Something went wrong. Please take another picture');
+    }
+  };
+
+  toggleSending() {
+    this.setState({sending: !this.state.sending});
+  }
+
+  async uploadToFirebase(photoUri) {
+    let clue = this.props.navigation.getParam('clue');
+
+    const photoFromUri = await fetch(photoUri);
     const photoBlob = await photoFromUri.blob();
 
-    //Upload photo to firebase
-    storageRef.child('asdf').put(photoBlob);
+    const photoName = `T-Time_Clue_Number${clue.clueNumber}`;
+    return storageRef.child(photoName).put(photoBlob);
+  }
 
-
+  markClueCompleted() {
     let clue = this.props.navigation.getParam('clue');
-    // Set the clue to completed
-    cluesRef.child(clue.key).update({completed: true});
-
-    //Get rid of the photo from state
-    this.cancelPhotoPreview();
-  };
+    return cluesRef.child(clue.key).update({completed: true});
+  }
 
   cancelPhotoPreview = () => {
     this.setState({photo: null});
@@ -142,12 +161,6 @@ export default class CameraScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  MainContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
   bottomBar: {
     flex: 1,
     alignItems: 'center',
@@ -179,4 +192,10 @@ const styles = StyleSheet.create({
     paddingTop: ( Platform.OS === 'ios' ) ? 40 : 0,
     paddingLeft: 20
   },
+
+  centerScreen: {
+    position: 'absolute',
+    paddingTop: layout.window.height / 2,
+    paddingLeft: layout.window.width / 2
+  }
 });

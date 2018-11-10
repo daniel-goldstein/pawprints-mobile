@@ -1,6 +1,8 @@
 import React from 'react';
-import { Alert } from 'react-native';
+import { Alert, View } from 'react-native';
 import { MapView } from 'expo';
+
+import { ButtonGroup } from 'react-native-elements';
 
 import { cluesRef } from "../fire";
 import Clue from "../components/Clue";
@@ -20,20 +22,28 @@ export default class HomeScreen extends React.Component {
     this.state = {
       isLoading: true,
       clues: [],
-      region: null
+      region: null,
+      clueVisibilitySelectedIndex: 0
     };
   }
 
   render() {
     return (
-      <MapView
-        style={{ flex: 1 }}
-        initialRegion={this.state.region}
-        showsUserLocation={true}
-        showsMyLocationButton={true}
-      >
-        {this.renderClues()}
-      </MapView>
+      <View style={{flex: 1}}>
+        <MapView
+          style={{ flex: 1 }}
+          initialRegion={this.state.region}
+          showsUserLocation={true}
+          showsMyLocationButton={true}
+        >
+          {this.renderClues()}
+        </MapView>
+        <ButtonGroup
+          onPress={(index) => this.setState({clueVisibilitySelectedIndex: index})}
+          selectedIndex={this.state.clueVisibilitySelectedIndex}
+          buttons={['All', 'Completed', 'Uncompleted']}
+        />
+      </View>
     )
   }
 
@@ -75,31 +85,47 @@ export default class HomeScreen extends React.Component {
   };
 
   renderClues() {
-    return this.state.clues.map((clue, index) => {
-      return <Clue clue={clue} key={index} onCluePress={this.onCluePress(clue)}/>;
+    const allClues = this.state.clues;
+    const clueVisibilitySelectedIndex = this.state.clueVisibilitySelectedIndex;
+    let cluesToShow = [];
+
+    switch (clueVisibilitySelectedIndex) {
+      case 0: // All
+        cluesToShow = allClues;
+        break;
+      case 1: // Completed
+        cluesToShow = allClues.filter(clue => clue.completed);
+        break;
+      case 2: // Uncompleted
+        cluesToShow = allClues.filter(clue => !clue.completed);
+        break;
+      default:
+        console.error(`Expected a valid SHOW_CLUE variant, got ${showClues}`);
+    }
+
+    return cluesToShow.map((clue, index) => {
+      return <Clue clue={clue} key={index} onCluePress={this.makeOnCluePress(clue)}/>;
     })
   }
 
-  //Closes over the clue so the clue's press callback will have access to it
-  onCluePress = (clue) => {
-    const message = clue.completed ?
-      `Mark ${clue.title} as incomplete?`:
-      `Mark ${clue.title} as completed?`;
-
+  // Closes over the clue so the clue's press callback will have access to it
+  makeOnCluePress = (clue) => {
     return () => {
-      Alert.alert(
-        'Complete',
-        message,
-        [
-          {text: 'Mark that clue', onPress: () => this.pushCamera(clue)},
-          {text: 'Cancel', onPress: () => console.log("canceled"), style: 'cancel'}
-        ],
-        { cancelable: true }
-      );
+      if (!clue.completed) {
+        Alert.alert(
+          'Complete',
+          'Complete this clue by taking a picture?',
+          [
+            {text: 'Send it', onPress: () => this.pushCamera(clue)},
+            {text: 'Cancel', onPress: () => console.log("canceled"), style: 'cancel'}
+          ],
+          {cancelable: true}
+        );
+      }
     }
   };
 
   pushCamera = (clue) => {
     this.props.navigation.push('Camera', {clue: clue});
-  }
+  };
 }
