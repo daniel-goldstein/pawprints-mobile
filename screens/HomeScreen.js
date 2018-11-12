@@ -100,7 +100,7 @@ export default class HomeScreen extends React.Component {
         cluesToShow = allClues.filter(clue => !clue.completed);
         break;
       default:
-        console.error(`Expected a valid SHOW_CLUE variant, got ${showClues}`);
+        console.error(`Expected a valid clue visibility, got ${showClues}`);
     }
 
     return cluesToShow.map((clue, index) => {
