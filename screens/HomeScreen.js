@@ -4,8 +4,11 @@ import { MapView } from 'expo';
 
 import { ButtonGroup } from 'react-native-elements';
 
-import { cluesRef } from "../fire";
+import demonHusky from '../assets/images/husky.png';
+
+import { cluesRef, huntersRef } from "../fire";
 import Clue from "../components/Clue";
+import UsernameForm from "./UsernameForm";
 
 // Controls initial zoom of the map
 const LATITUDE_DELTA = 0.06;
@@ -20,16 +23,22 @@ export default class HomeScreen extends React.Component {
     super(props);
 
     this.state = {
+      username: null,
       isLoading: true,
       clues: [],
+      hunters: [],
       region: null,
-      clueVisibilitySelectedIndex: 0
+      clueVisibilitySelectedIndex: 0,
+      myName: null
     };
   }
 
   render() {
     return (
       <View style={{flex: 1}}>
+        {this.state.username ? undefined :
+          <UsernameForm submitUsername={(username) => this.setState({ username })}/>}
+
         <MapView
           style={{ flex: 1 }}
           initialRegion={this.state.region}
@@ -37,6 +46,7 @@ export default class HomeScreen extends React.Component {
           showsMyLocationButton={true}
         >
           {this.renderClues()}
+          {this.renderHunters()}
         </MapView>
         <ButtonGroup
           onPress={(index) => this.setState({clueVisibilitySelectedIndex: index})}
@@ -44,12 +54,14 @@ export default class HomeScreen extends React.Component {
           buttons={['All', 'Completed', 'Uncompleted']}
         />
       </View>
-    )
+    );
   }
 
   componentDidMount() {
     this.fetchClueData();
+    this.fetchHunterData();
     this.setRegion();
+    this.setupLocationPosting();
   }
 
   fetchClueData() {
@@ -59,9 +71,20 @@ export default class HomeScreen extends React.Component {
         clues.push({ ...item.val(), key: item.key });
       });
 
-      this.setState({ clues })
+      this.setState({ clues });
     });
   };
+
+  fetchHunterData() {
+    huntersRef.on('value', snapshot => {
+      let hunters = [];
+      snapshot.forEach(item => {
+        hunters.push({ ...item.val(), name: item.key});
+      });
+
+      this.setState({ hunters });
+    });
+  }
 
   setRegion() {
     this.getCurrentLocation().then(position => {
@@ -84,6 +107,23 @@ export default class HomeScreen extends React.Component {
     });
   };
 
+  setupLocationPosting() {
+    navigator.geolocation.watchPosition(this.uploadLocation);
+  }
+
+  uploadLocation = async () => {
+    let username = this.state.username;
+    if (username) {
+      const currentLocation = await this.getCurrentLocation();
+      const hunterInfo = {
+        latitude: currentLocation.coords.latitude,
+        longitude: currentLocation.coords.longitude
+      };
+
+      huntersRef.child(username).update(hunterInfo);
+    }
+  };
+
   renderClues() {
     const allClues = this.state.clues;
     const clueVisibilitySelectedIndex = this.state.clueVisibilitySelectedIndex;
@@ -100,7 +140,7 @@ export default class HomeScreen extends React.Component {
         cluesToShow = allClues.filter(clue => !clue.completed);
         break;
       default:
-        console.error(`Expected a valid SHOW_CLUE variant, got ${showClues}`);
+        console.error(`Expected a valid clue visibility, got ${showClues}`);
     }
 
     return cluesToShow.map((clue, index) => {
@@ -128,4 +168,18 @@ export default class HomeScreen extends React.Component {
   pushCamera = (clue) => {
     this.props.navigation.push('Camera', {clue: clue});
   };
+
+  renderHunters() {
+    return this.state.hunters.map(hunter => {
+      const coords = { latitude: hunter.latitude, longitude: hunter.longitude };
+      return (
+        <MapView.Marker
+          key={hunter.name}
+          coordinate={coords}
+          title={hunter.name}
+          image={demonHusky}
+        />
+      );
+    });
+  }
 }

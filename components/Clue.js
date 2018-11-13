@@ -18,7 +18,7 @@ export default class Clue extends React.Component {
 
     return (
       <MapView.Marker
-        key={clue.clueNumber}
+        key={clue.clueId}
         coordinate={coords}
         title={clue.title}
         description={description}

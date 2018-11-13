@@ -10,10 +10,10 @@ import { storageRef, cluesRef } from "../fire";
 import layout from '../constants/Layout';
 
 export default class CameraScreen extends React.Component {
-    static navigationOptions = {
-        header: null,
-        tabBarVisible: false
-    };
+  static navigationOptions = {
+      header: null,
+      tabBarVisible: false
+  };
 
   constructor(props) {
     super(props);
@@ -109,8 +109,10 @@ export default class CameraScreen extends React.Component {
       this.toggleSending();
 
       CameraRoll.saveToCameraRoll(photo.uri, 'photo');
-      await this.uploadToFirebase(photo.uri);
-      await this.markClueCompleted();
+
+      const clue = this.props.navigation.getParam('clue');
+      await CameraScreen.uploadToFirebase(photo.uri, clue.clueId);
+      await CameraScreen.markClueCompleted(clue.key);
 
       this.toggleSending();
       this.cancelPhotoPreview();
@@ -124,19 +126,15 @@ export default class CameraScreen extends React.Component {
     this.setState({sending: !this.state.sending});
   }
 
-  async uploadToFirebase(photoUri) {
-    let clue = this.props.navigation.getParam('clue');
-
+  static async uploadToFirebase(photoUri, clueId) {
     const photoFromUri = await fetch(photoUri);
     const photoBlob = await photoFromUri.blob();
 
-    const photoName = `T-Time_Clue_Number${clue.clueNumber}`;
-    return storageRef.child(photoName).put(photoBlob);
+    return storageRef.child(clueId).put(photoBlob);
   }
 
-  markClueCompleted() {
-    let clue = this.props.navigation.getParam('clue');
-    return cluesRef.child(clue.key).update({completed: true});
+  static async markClueCompleted(clueKey) {
+    return cluesRef.child(clueKey).update({completed: true});
   }
 
   cancelPhotoPreview = () => {
@@ -189,7 +187,7 @@ const styles = StyleSheet.create({
   },
 
   topLeftButton: {
-    paddingTop: ( Platform.OS === 'ios' ) ? 40 : 0,
+    paddingTop: 40,
     paddingLeft: 20
   },
 
