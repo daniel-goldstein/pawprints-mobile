@@ -108,6 +108,7 @@ export default class HomeScreen extends React.Component {
   };
 
   setupLocationPosting() {
+    this.uploadLocation(); //Post location on application start as well
     navigator.geolocation.watchPosition(this.uploadLocation);
   }
 
@@ -140,7 +141,7 @@ export default class HomeScreen extends React.Component {
         cluesToShow = allClues.filter(clue => !clue.completed);
         break;
       default:
-        console.error(`Expected a valid clue visibility, got ${showClues}`);
+        console.error(`Expected a valid clue visibility, got ${clueVisibilitySelectedIndex}`);
     }
 
     return cluesToShow.map((clue, index) => {
