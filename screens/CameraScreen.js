@@ -142,6 +142,9 @@ export default class CameraScreen extends React.Component {
   };
 
   snapPhoto = async () => {
+    // Somehow fixes bug in takePictureAsync that doesn't respond until second tap
+    console.log('');
+
     if (this.camera) {
       let photo = await this.camera.takePictureAsync({base64: true});
 
