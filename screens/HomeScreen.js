@@ -152,23 +152,26 @@ export default class HomeScreen extends React.Component {
   // Closes over the clue so the clue's press callback will have access to it
   makeOnCluePress = (clue) => {
     return () => {
-      if (!clue.completed) {
-        Alert.alert(
-          'Complete',
-          'Complete this clue by taking a picture?',
+      Alert.alert(
+          'Change completion',
+          "Change this clue's completion?",
           [
-            {text: 'Send it', onPress: () => this.pushCamera(clue)},
+            {text: 'Complete with pic', onPress: () => this.pushCamera(clue)},
+            {text: 'Toggle without pic', onPress: () => HomeScreen.toggleComplete(clue)},
             {text: 'Cancel', onPress: () => console.log("canceled"), style: 'cancel'}
           ],
           {cancelable: true}
         );
       }
-    }
   };
 
   pushCamera = (clue) => {
     this.props.navigation.push('Camera', {clue: clue});
   };
+
+  static async toggleComplete(clue) {
+    return cluesRef.child(clue.key).update({completed: !clue.completed});
+  }
 
   renderHunters() {
     return this.state.hunters.map(hunter => {

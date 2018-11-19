@@ -81,7 +81,9 @@ export default class CameraScreen extends React.Component {
       <View style={{ flex: 1 }}>
         <Camera style={{ flex: 1 }}
                 type={this.state.type}
-                ref={ cam => this.camera = cam }>
+                ref={ cam => this.camera = cam }
+                flashMode={Camera.Constants.FlashMode.on}
+                zoom={0}>
 
           <View style={styles.topBar}>
             <View style={styles.topLeftButton}>
