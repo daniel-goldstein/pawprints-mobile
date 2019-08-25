@@ -156,8 +156,8 @@ export default class HomeScreen extends React.Component {
           'Change completion',
           "Change this clue's completion?",
           [
-            {text: 'Complete with pic', onPress: () => this.pushCamera(clue)},
-            {text: 'Toggle without pic', onPress: () => HomeScreen.toggleComplete(clue)},
+            {text: 'Take Photo', onPress: () => this.pushCamera(clue)},
+            {text: clue.completed ? 'Mark Incomplete' : 'Mark Complete', onPress: () => HomeScreen.toggleComplete(clue)},
             {text: 'Cancel', onPress: () => console.log("canceled"), style: 'cancel'}
           ],
           {cancelable: true}
