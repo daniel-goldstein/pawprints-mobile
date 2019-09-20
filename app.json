@@ -4,8 +4,10 @@
     "description": "Painlessly track and complete clues for Husky Hunt",
     "slug": "pawprints-mobile",
     "privacy": "public",
-    "sdkVersion": "30.0.0",
-    "platforms": ["ios"],
+    "sdkVersion": "33.0.0",
+    "platforms": [
+      "ios"
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/paw-prints.png",
@@ -21,8 +23,9 @@
       "**/*"
     ],
     "ios": {
+      "buildNumber": "2",
       "supportsTablet": true,
-      "bundleIdentifier": "com.danielgoldsteincompany.pawprints-mobile"
+      "bundleIdentifier": "com.danielgoldsteincompany.pawprints"
     }
   }
 }

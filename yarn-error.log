@@ -1,0 +1,63 @@
+Arguments: 
+  /usr/local/Cellar/node/12.10.0/bin/node /usr/local/Cellar/yarn/1.17.3/libexec/bin/yarn.js add @babel/transform-react-jsx-source
+
+PATH: 
+  /Users/joshspicer/Library/Android/sdk/emulator:/Users/joshspicer/Library/Android/sdk/tools:/Users/joshspicer/.cabal/bin:/Users/joshspicer/.ghcup/bin:/usr/local/opt/mongodb-community@3.6/bin:/usr/local/opt/ruby/bin:/Users/joshspicer/gems/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/VMware Fusion.app/Contents/Public:/Library/TeX/texbin:/usr/local/go/bin:/usr/local/MacGPG2/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Applications/Wireshark.app/Contents/MacOS:/Users/joshspicer/Library/Android/sdk/emulator:/Users/joshspicer/Library/Android/sdk/tools:/Users/joshspicer/.cabal/bin:/Users/joshspicer/.ghcup/bin:/usr/local/opt/mongodb-community@3.6/bin:/usr/local/opt/ruby/bin:/Users/joshspicer/gems/bin:/Users/joshspicer/Library/Android/sdk/platform-tools:/Users/joshspicer/Library/Android/sdk/tools:/Users/joshspicer/Library/Android/sdk/platform-tools
+
+Yarn version: 
+  1.17.3
+
+Node version: 
+  12.10.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/@babel%2ftransform-react-jsx-source: Not found
+      at Request.params.callback [as _callback] (/usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:66830:18)
+      at Request.self.callback (/usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:140464:22)
+      at Request.emit (events.js:209:13)
+      at Request.<anonymous> (/usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:141436:10)
+      at Request.emit (events.js:209:13)
+      at IncomingMessage.<anonymous> (/usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:141358:12)
+      at Object.onceWrapper (events.js:298:28)
+      at IncomingMessage.emit (events.js:214:15)
+      at endReadableNT (_stream_readable.js:1178:12)
+      at processTicksAndRejections (internal/process/task_queues.js:80:21)
+
+npm manifest: 
+  {
+    "name": "my-new-project",
+    "main": "node_modules/expo/AppEntry.js",
+    "private": true,
+    "scripts": {
+      "start": "expo start",
+      "android": "expo start --android",
+      "ios": "expo start --ios",
+      "eject": "expo eject",
+      "test": "node ./node_modules/jest/bin/jest.js --watchAll"
+    },
+    "jest": {
+      "preset": "jest-expo"
+    },
+    "dependencies": {
+      "@expo/samples": "2.1.1",
+      "expo": "^33.0.0",
+      "firebase": "^5.5.7",
+      "native-base": "^2.8.1",
+      "react": "16.8.3",
+      "react-native": "https://github.com/expo/react-native/archive/sdk-33.0.0.tar.gz",
+      "react-native-elements": "^0.19.1",
+      "react-navigation": "^2.18.2"
+    },
+    "devDependencies": {
+      "jest-expo": "33.0.0"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
