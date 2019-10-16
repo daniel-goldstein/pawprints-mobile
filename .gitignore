@@ -2,3 +2,4 @@ node_modules/**/*
 .expo/**/*
 .idea
 properties.js
+GoogleService-Info.plist
