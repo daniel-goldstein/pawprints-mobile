@@ -12,7 +12,7 @@ _clearSession = clear => {
 export default UserHeader = props => {
   const { userGivenName, triggerLogout } = props;
 
-  console.log("UserHeader:", userGivenName);
+  // console.log("UserHeader:", userGivenName);
 
   return (
     <View>

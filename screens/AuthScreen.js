@@ -3,8 +3,7 @@ import { Text, View } from "react-native";
 import { Google } from "expo";
 import { AsyncStorage } from "react-native";
 
-const expoAppClientIdiOS =
-  "188912760794-3s96gp0dsna073laqdf2o9dgno5gj456.apps.googleusercontent.com";
+import { expoAppClientIdiOS } from "../properties";
 
 // TODO: switch clientID with `Constants.appOwnership`
 
@@ -30,7 +29,7 @@ export default class AuthScreen extends React.Component {
       const value = await AsyncStorage.getItem(key);
       if (value !== null) {
         // We have data!!
-        console.log("Grabbing Data from Async. Found:", value);
+        // console.log("Grabbing Data from Async. Found:", value);
         return value;
       }
     } catch (error) {
@@ -51,7 +50,7 @@ export default class AuthScreen extends React.Component {
     const maybeAccessToken = await this._retrieveData("accessToken");
 
     if (maybeUser && maybeAccessToken) {
-      console.log("Existing user found in AsyncStore.", maybeUser);
+      // console.log("Existing user found in AsyncStore.", maybeUser);
       // Set our user (will trigger HomeScreen refresh)
       setUser(maybeUser, maybeAccessToken);
     }
@@ -63,7 +62,8 @@ export default class AuthScreen extends React.Component {
 
     // Obtain access token from Expo's Google API
     const { type, accessToken, user } = await Google.logInAsync({
-      iosClientId: expoAppClientIdiOS
+      iosClientId: expoAppClientIdiOS,
+      scopes: ["https://www.googleapis.com/auth/drive"]
     });
 
     if (type === "success") {

@@ -12,6 +12,8 @@ import AuthScreen from "./AuthScreen";
 
 import UserHeader from "../components/UserHeader";
 
+import GDrive from "react-native-google-drive-api-wrapper";
+
 // Controls initial zoom of the map
 const LATITUDE_DELTA = 0.06;
 const LONGITUDE_DELTA = 0.06;
@@ -44,6 +46,8 @@ export default class HomeScreen extends React.Component {
   _setUser = (userGivenName, accessToken) => {
     this.setState({ userGivenName });
     this.setState({ accessToken });
+    GDrive.setAccessToken(accessToken);
+    GDrive.init();
   };
 
   render() {
