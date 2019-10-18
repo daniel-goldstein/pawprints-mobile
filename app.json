@@ -5,7 +5,9 @@
     "slug": "pawprints-mobile",
     "privacy": "public",
     "sdkVersion": "33.0.0",
-    "platforms": ["ios"],
+    "platforms": [
+      "ios"
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/paw-prints.png",
@@ -17,7 +19,9 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "buildNumber": "2",
       "supportsTablet": true,
