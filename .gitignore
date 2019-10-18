@@ -3,3 +3,4 @@ node_modules/**/*
 .idea
 properties.js
 GoogleService-Info.plist
+app.json
