@@ -1,9 +1,9 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Text, View, Platform } from "react-native";
 import { Google } from "expo";
 import { AsyncStorage } from "react-native";
 
-import { expoAppClientIdiOS } from "../properties";
+import { expoAppClientIdiOS, expoAppClientIdAndroid } from "../properties";
 
 // TODO: switch clientID with `Constants.appOwnership`
 
@@ -63,6 +63,7 @@ export default class AuthScreen extends React.Component {
     // Obtain access token from Expo's Google API
     const { type, accessToken, user } = await Google.logInAsync({
       iosClientId: expoAppClientIdiOS,
+      androidClientId: expoAppClientIdAndroid,
       scopes: ["https://www.googleapis.com/auth/drive"]
     });
 
