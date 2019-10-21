@@ -137,12 +137,12 @@ export default class CameraScreen extends React.Component {
       await CameraScreen.uploadToGoogleDrive(photo, clue);
       await CameraScreen.markClueCompleted(clue.key);
 
-      this.toggleSending();
       this.cancelPhotoPreview();
     } catch (e) {
       console.log(e);
       Alert.alert("Oh no! Something went wrong: ", e);
     }
+    this.toggleSending();
   };
 
   toggleSending() {

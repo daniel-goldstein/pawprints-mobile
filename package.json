@@ -23,7 +23,9 @@
     "react-navigation": "^2.18.2",
     "react-native-google-drive-api-wrapper": "joshspicer/react-native-google-drive-api-wrapper",
     "utf8": "2.0.0",
-    "simple-common-utils": "2.1.1"
+    "simple-common-utils": "2.1.1",
+    "expo-constants": "5.0.1",
+    "expo-app-auth": "5.0.1"
   },
   "devDependencies": {
     "jest-expo": "33.0.0"
