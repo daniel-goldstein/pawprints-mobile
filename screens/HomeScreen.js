@@ -1,6 +1,6 @@
 import React from "react";
 import { Alert, View } from "react-native";
-import { MapView } from "expo";
+import { MapView, Font } from "expo";
 
 import { ButtonGroup } from "react-native-elements";
 

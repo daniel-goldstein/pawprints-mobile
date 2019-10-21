@@ -67,7 +67,9 @@ export default class CameraScreen extends React.Component {
           source={{ uri: `data:image/jpg;base64, ${photo.base64}` }}
         >
           {this.state.sending ? (
-            <Spinner style={styles.centerScreen} />
+            <View>
+              <Spinner style={styles.centerScreen} />
+            </View>
           ) : (
             undefined
           )}
@@ -83,7 +85,7 @@ export default class CameraScreen extends React.Component {
           <View style={styles.bottomBar}>
             <View style={styles.sendButton}>
               <Button
-                success
+                disabled={this.state.sending}
                 rounded
                 onPress={() => this.uploadPhotoAndMarkCompleted(photo)}
               >
@@ -130,6 +132,7 @@ export default class CameraScreen extends React.Component {
     try {
       this.toggleSending();
 
+      console.log(photo.uri);
       CameraRoll.saveToCameraRoll(photo.uri, "photo");
 
       const clue = this.props.navigation.getParam("clue");
@@ -143,6 +146,8 @@ export default class CameraScreen extends React.Component {
       Alert.alert("Oh no! Something went wrong: ", e);
     }
     this.toggleSending();
+    // Leave the camera view
+    this.props.navigation.goBack();
   };
 
   toggleSending() {
@@ -179,7 +184,19 @@ export default class CameraScreen extends React.Component {
       },
       true
     );
-    console.log("RETURN CODE", out);
+
+    // User feedback on success
+    // If we have an out response
+    if (out) {
+      // If response was 200
+      if (out.status === 200) {
+        Alert.alert(`Uploaded ${clueListId}${clueNum}`);
+      } else {
+        Alert.alert(`Error:  Status code ${out.status}`);
+      }
+    } else {
+      Alert.alert("Error: Nothing Returned");
+    }
   }
 
   static async markClueCompleted(clueKey) {

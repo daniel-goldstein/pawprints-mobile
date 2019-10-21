@@ -41,10 +41,7 @@ const LinksStack = createStackNavigator({
 LinksStack.navigationOptions = {
   tabBarLabel: "Links",
   tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      //TODO: name={Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-link'}
-    />
+    <TabBarIcon focused={focused} name={"ios-link"} />
   )
 };
 
