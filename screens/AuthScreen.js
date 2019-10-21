@@ -57,7 +57,6 @@ export default class AuthScreen extends React.Component {
   async componentDidMount() {
     // Rehydrate from storage
     await this.initAsync();
-    await this.invokeRefresh();
   }
 
   // Helper to access Async Storage
@@ -203,7 +202,7 @@ export default class AuthScreen extends React.Component {
           title="LOGIN TO HUSKY GOOGLE"
           color="#000"
         />
-        <Text>version 6</Text>
+        <Text>version 7</Text>
       </View>
     );
   }
