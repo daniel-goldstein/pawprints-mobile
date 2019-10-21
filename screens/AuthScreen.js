@@ -1,7 +1,9 @@
 import React from "react";
-import { Text, View, Platform } from "react-native";
+import { Text, View, Platform, Button, Alert } from "react-native";
 import { Google } from "expo";
 import { AsyncStorage } from "react-native";
+import * as AppAuth from "expo-app-auth";
+import Constants from "expo-constants";
 
 import {
   expoAppClientIdiOS,
@@ -9,12 +11,53 @@ import {
   standaloneClientIdiOS
 } from "../properties";
 
-// TODO: switch clientID with `Constants.appOwnership`
+const SCOPES = ["https://www.googleapis.com/auth/drive"];
 
 export default class AuthScreen extends React.Component {
+  // Generates a unique oauth refresh config given the client
+  generateRefreshConfig = () => {
+    const isStandalone = Constants.appOwnership === "standalone";
+    const isAndroid = Platform.OS === "android";
+    const isIOS = Platform.OS === "ios";
+
+    let determinedClientId = "";
+
+    // iOS standalone
+    if (isStandalone && isIOS) {
+      determinedClientId = standaloneClientIdiOS;
+      console.log("iOS + Standalone");
+    }
+
+    // Android expo
+    if (!isStandalone && isAndroid) {
+      determinedClientId = expoAppClientIdAndroid;
+      console.log("Android + Expo");
+    }
+
+    // iOS expo
+    if (!isStandalone && isIOS) {
+      determinedClientId = expoAppClientIdiOS;
+      console.log("iOS + Expo");
+    }
+
+    if (determinedClientId === "") {
+      console.error(
+        `no refresh token case for ${Constants.appOwnership} and ${Platform.OS}.`
+      );
+    }
+
+    // Return the necessary config to call the refresh method
+    return {
+      issuer: "https://accounts.google.com",
+      clientId: determinedClientId,
+      scopes: SCOPES
+    };
+  };
+
   async componentDidMount() {
     // Rehydrate from storage
     await this.initAsync();
+    await this.invokeRefresh();
   }
 
   // Helper to access Async Storage
@@ -47,16 +90,28 @@ export default class AuthScreen extends React.Component {
 
   initAsync = async () => {
     // Get the setter from parents
-    const { setUser } = this.props;
+    const { setUser, doRefresh } = this.props;
+
+    if (doRefresh) {
+      await this._invokeRefresh();
+    }
 
     // Check if we have the user in async storage.
     const maybeUser = await this._retrieveData("userGivenName");
     const maybeAccessToken = await this._retrieveData("accessToken");
+    const maybeRefreshToken = await this._retrieveData("refreshToken");
+    const maybeAccessTokenExpirationDate = await this._retrieveData(
+      "accessTokenExpirationDate"
+    );
 
     if (maybeUser && maybeAccessToken) {
-      // console.log("Existing user found in AsyncStore.", maybeUser);
       // Set our user (will trigger HomeScreen refresh)
-      setUser(maybeUser, maybeAccessToken);
+      setUser(
+        maybeUser,
+        maybeAccessToken,
+        maybeRefreshToken,
+        maybeAccessTokenExpirationDate
+      );
     }
   };
 
@@ -65,20 +120,30 @@ export default class AuthScreen extends React.Component {
     const { setUser } = this.props;
 
     // Obtain access token from Expo's Google API
-    const { type, accessToken, user } = await Google.logInAsync({
+    const { type, accessToken, refreshToken, user } = await Google.logInAsync({
       iosClientId: expoAppClientIdiOS,
       androidClientId: expoAppClientIdAndroid,
       iosStandaloneAppClientId: standaloneClientIdiOS,
-      scopes: ["https://www.googleapis.com/auth/drive"]
+      scopes: SCOPES
     });
 
     if (type === "success") {
       // Store in async data for later.
       await this._storeData("userGivenName", user.givenName);
       await this._storeData("accessToken", accessToken);
+      await this._storeData("refreshToken", refreshToken);
+      await this._storeData(
+        "accessTokenExpirationDate",
+        new Date().toISOString()
+      );
 
       // Call parent setUser function
-      setUser(user.givenName, accessToken);
+      setUser(
+        user.givenName,
+        accessToken,
+        refreshToken,
+        new Date().toISOString()
+      );
 
       console.log(
         "Received new data from login and set for user",
@@ -89,10 +154,54 @@ export default class AuthScreen extends React.Component {
     }
   };
 
+  invokeRefresh = async () => {
+    const { setUser } = this.props;
+
+    // Retrieve the refresh token!
+
+    const maybeRefreshToken = await this._retrieveData("refreshToken");
+    const userGivenName = await this._retrieveData("userGivenName");
+
+    // Generate the appropriate OAUTH config given platform
+    const rConfig = this.generateRefreshConfig();
+
+    if (maybeRefreshToken) {
+      const {
+        accessToken,
+        accessTokenExpirationDate,
+        refreshToken
+      } = await AppAuth.refreshAsync(rConfig, maybeRefreshToken);
+
+      console.log(accessTokenExpirationDate);
+
+      // Share with Parent
+      setUser(
+        userGivenName,
+        accessToken,
+        refreshToken,
+        accessTokenExpirationDate
+      );
+
+      // Set our async storage.
+      await this._storeData("accessToken", accessToken);
+      await this._storeData(
+        "accessTokenExpirationDate",
+        accessTokenExpirationDate
+      );
+    } else {
+      Alert.alert("No refresh token, please logout and try again!");
+    }
+  };
+
   render() {
     return (
-      <View>
-        <Text onPress={() => this.getNewToken()}>Tap to Login!</Text>
+      <View style={{ alignItems: "center" }}>
+        <Button
+          onPress={() => this.getNewToken()}
+          title="LOGIN TO HUSKY GOOGLE"
+          color="#000"
+        />
+        <Text>version 5</Text>
       </View>
     );
   }

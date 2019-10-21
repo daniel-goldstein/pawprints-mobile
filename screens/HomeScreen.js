@@ -29,6 +29,8 @@ export default class HomeScreen extends React.Component {
     this.state = {
       userGivenName: null, // Firstname from google auth
       accessToken: null, // Google Token
+      refreshToken: null, // refresh Token
+      accessTokenExpirationDate: null,
       isLoading: true,
       clues: [],
       hunters: [],
@@ -41,25 +43,68 @@ export default class HomeScreen extends React.Component {
   _logout = () => {
     this.setState({ userGivenName: null });
     this.setState({ accessToken: null });
+    this.setState({ refreshToken: null });
+    this.setState({ accessTokenExpirationDate: null });
   };
 
-  _setUser = (userGivenName, accessToken) => {
+  // AuthScreen calls this on login, rehydrate, or refresh
+  _setUser = (
+    userGivenName,
+    accessToken,
+    refreshToken,
+    accessTokenExpirationDate
+  ) => {
     this.setState({ userGivenName });
     this.setState({ accessToken });
+    this.setState({ refreshToken });
+    this.setState({ accessTokenExpirationDate });
+
     GDrive.setAccessToken(accessToken);
     GDrive.init();
   };
 
+  _tokenAboutToExpire() {
+    const { accessTokenExpirationDate } = this.state;
+
+    // If we don't have an expirationTime yet, break out and return FALSE
+    if (!accessTokenExpirationDate) {
+      return false;
+    }
+
+    const expiryTime = new Date(accessTokenExpirationDate);
+    const thresholdTime = new Date();
+    thresholdTime.setMinutes(thresholdTime.getMinutes() - 10);
+
+    console.log("expiryTime", expiryTime);
+    console.log("thresholdTime", thresholdTime);
+
+    if (expiryTime.valueOf() < thresholdTime.valueOf()) {
+      console.log("token expiring");
+      return true;
+    } else {
+      console.log("token good to go!");
+      return false;
+    }
+  }
+
   render() {
-    const { userGivenName, accessToken } = this.state;
+    const {
+      userGivenName,
+      accessToken,
+      accessTokenExpirationDate
+    } = this.state;
+    const isTokenAboutToExpire = this._tokenAboutToExpire();
 
     // Auth
-    if (!userGivenName || !accessToken) {
+    if (!userGivenName || !accessToken || isTokenAboutToExpire) {
       return (
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
         >
-          <AuthScreen setUser={this._setUser} />
+          <AuthScreen
+            doRefresh={isTokenAboutToExpire}
+            setUser={this._setUser}
+          />
         </View>
       );
     }
@@ -88,6 +133,7 @@ export default class HomeScreen extends React.Component {
           <UserHeader
             triggerLogout={this._logout}
             userGivenName={userGivenName}
+            accessTokenExpirationDate={accessTokenExpirationDate}
           />
         </View>
       </View>

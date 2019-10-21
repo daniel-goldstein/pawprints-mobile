@@ -10,7 +10,7 @@ _clearSession = clear => {
 };
 
 export default UserHeader = props => {
-  const { userGivenName, triggerLogout } = props;
+  const { userGivenName, triggerLogout, accessTokenExpirationDate } = props;
 
   // console.log("UserHeader:", userGivenName);
 
@@ -18,7 +18,7 @@ export default UserHeader = props => {
     <View>
       <Text
         onPress={() => _clearSession(triggerLogout)}
-      >{`Welcome Back ${userGivenName}`}</Text>
+      >{`Welcome Back ${userGivenName} \n DEBUG: ${accessTokenExpirationDate}`}</Text>
     </View>
   );
 };

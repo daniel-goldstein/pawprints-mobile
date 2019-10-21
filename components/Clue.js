@@ -1,13 +1,14 @@
 import React from "react";
 import { MapView } from "expo";
 
-const RED = '#ff0000';
-const BLUE = '#0000ff';
+const RED = "#ff0000";
+const BLUE = "#0000ff";
 
 export default class Clue extends React.Component {
-
   render() {
     const clue = this.props.clue;
+    const clueListId = clue.clueListId;
+    const clueNum = clue.clueNum;
 
     const coords = {
       latitude: clue.latitude,
@@ -20,7 +21,7 @@ export default class Clue extends React.Component {
       <MapView.Marker
         key={clue.clueId}
         coordinate={coords}
-        title={clue.title}
+        title={`${clue.title} (${clueListId}${clueNum})`}
         description={description}
         pinColor={color}
         onCalloutPress={this.props.onCluePress}
