@@ -101,7 +101,7 @@ export default class AuthScreen extends React.Component {
 
     // If we actually have a refresh token, and we were told to refresh
     if (maybeRefreshToken && doRefresh) {
-      await this._invokeRefresh();
+      await this.invokeRefresh();
     } else {
       // If we didn't refresh and have something to restore
       if (maybeUser && maybeAccessToken) {
@@ -202,7 +202,7 @@ export default class AuthScreen extends React.Component {
           title="LOGIN TO HUSKY GOOGLE"
           color="#000"
         />
-        <Text>version 7</Text>
+        <Text>version 8</Text>
       </View>
     );
   }
