@@ -64,10 +64,10 @@ export default class HomeScreen extends React.Component {
   };
 
   _tokenAboutToExpire() {
-    const { accessTokenExpirationDate } = this.state;
+    const { accessTokenExpirationDate, refreshToken } = this.state;
 
-    // If we don't have an expirationTime yet, break out and return FALSE
-    if (!accessTokenExpirationDate) {
+    // If we don't have an expirationTime or a way to refresh it yet, break out and return FALSE
+    if (!accessTokenExpirationDate || !refreshToken) {
       return false;
     }
 
@@ -93,6 +93,7 @@ export default class HomeScreen extends React.Component {
       accessToken,
       accessTokenExpirationDate
     } = this.state;
+
     const isTokenAboutToExpire = this._tokenAboutToExpire();
 
     // Auth

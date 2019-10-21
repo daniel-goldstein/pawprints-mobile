@@ -92,10 +92,6 @@ export default class AuthScreen extends React.Component {
     // Get the setter from parents
     const { setUser, doRefresh } = this.props;
 
-    if (doRefresh) {
-      await this._invokeRefresh();
-    }
-
     // Check if we have the user in async storage.
     const maybeUser = await this._retrieveData("userGivenName");
     const maybeAccessToken = await this._retrieveData("accessToken");
@@ -104,14 +100,20 @@ export default class AuthScreen extends React.Component {
       "accessTokenExpirationDate"
     );
 
-    if (maybeUser && maybeAccessToken) {
-      // Set our user (will trigger HomeScreen refresh)
-      setUser(
-        maybeUser,
-        maybeAccessToken,
-        maybeRefreshToken,
-        maybeAccessTokenExpirationDate
-      );
+    // If we actually have a refresh token, and we were told to refresh
+    if (maybeRefreshToken && doRefresh) {
+      await this._invokeRefresh();
+    } else {
+      // If we didn't refresh and have something to restore
+      if (maybeUser && maybeAccessToken) {
+        // Set our user (will trigger HomeScreen refresh)
+        setUser(
+          maybeUser,
+          maybeAccessToken,
+          maybeRefreshToken,
+          maybeAccessTokenExpirationDate
+        );
+      }
     }
   };
 
@@ -201,7 +203,7 @@ export default class AuthScreen extends React.Component {
           title="LOGIN TO HUSKY GOOGLE"
           color="#000"
         />
-        <Text>version 5</Text>
+        <Text>version 6</Text>
       </View>
     );
   }
