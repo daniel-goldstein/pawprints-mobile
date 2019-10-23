@@ -1,5 +1,5 @@
 import React from "React";
-import { View, Text } from "react-native";
+import { View, Text, Alert } from "react-native";
 import { AsyncStorage } from "react-native";
 
 _clearSession = clear => {
@@ -18,7 +18,7 @@ export default UserHeader = props => {
     <View>
       <Text
         onPress={() => _clearSession(triggerLogout)}
-      >{`Welcome Back ${userGivenName} \n DEBUG: ${accessTokenExpirationDate}`}</Text>
+      >{`Hunter: ${userGivenName}\n(Tap To Logout) \nDEBUG: ${accessTokenExpirationDate}`}</Text>
     </View>
   );
 };

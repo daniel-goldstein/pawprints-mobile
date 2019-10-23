@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, Platform, Button, Alert } from "react-native";
+import { Text, View, Platform, Alert, TouchableOpacity } from "react-native";
 import { Google } from "expo";
 import { AsyncStorage } from "react-native";
 import * as AppAuth from "expo-app-auth";
@@ -10,6 +10,8 @@ import {
   expoAppClientIdAndroid,
   standaloneClientIdiOS
 } from "../properties";
+
+import { AntDesign } from "@expo/vector-icons";
 
 const SCOPES = ["https://www.googleapis.com/auth/drive"];
 
@@ -197,12 +199,18 @@ export default class AuthScreen extends React.Component {
   render() {
     return (
       <View style={{ alignItems: "center" }}>
-        <Button
-          onPress={() => this.getNewToken()}
-          title="LOGIN TO HUSKY GOOGLE"
-          color="#000"
-        />
-        <Text>version 8</Text>
+        <TouchableOpacity onPress={() => this.getNewToken()}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
+            <AntDesign name="google" size={70} color="black" />
+          </View>
+        </TouchableOpacity>
+        <Text style={{ paddingTop: 10 }}>version 9</Text>
       </View>
     );
   }
