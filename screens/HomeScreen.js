@@ -276,8 +276,9 @@ export default class HomeScreen extends React.Component {
 
   makeCrawlColorMap() {
     crawlColors = {};
-    clueLists = Array.from(new Set(this.state.clues.map(clue => clue.clueListId))).sort();
-    clueLists.forEach((listId, idx) => {
+    crawlClueLists = this.state.clues.filter(c => c.inCrawl).map(c => c.clueListId);
+    listIds = Array.from(new Set(crawlClueLists)).sort();
+    listIds.forEach((listId, idx) => {
       crawlColors[listId] = idx < CRAWL_COLORS.length ? CRAWL_COLORS[idx] : OVERFLOW_COLOR;
     });
 
