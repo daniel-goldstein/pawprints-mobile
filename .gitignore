@@ -4,3 +4,5 @@ node_modules/**/*
 properties.js
 GoogleService-Info.plist
 app.json
+yarn.lock
+package-lock.json

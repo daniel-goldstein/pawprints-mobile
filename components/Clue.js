@@ -1,31 +1,30 @@
 import React from "react";
 import { MapView } from "expo";
 
-const RED = "#ff0000";
-const BLUE = "#0000ff";
-
 export default class Clue extends React.Component {
   render() {
     const clue = this.props.clue;
-    const clueListId = clue.clueListId;
-    const clueNum = clue.clueNum;
-
     const coords = {
       latitude: clue.latitude,
       longitude: clue.longitude
     };
     const description = clue.completed ? "Completed!" : "Not completed";
-    const color = clue.completed ? BLUE : RED;
 
     return (
       <MapView.Marker
         key={clue.clueId}
         coordinate={coords}
-        title={`${clue.title} (${clueListId}${clueNum})`}
+        title={this.clueDescr(clue)}
         description={description}
-        pinColor={color}
+        pinColor={this.props.color}
         onCalloutPress={this.props.onCluePress}
       />
     );
+  }
+
+  clueDescr(clue) {
+    const titleAndId = `${clue.title} (${clue.clueListId}${clue.clueNum})`;
+
+    return clue.inCrawl ? `${titleAndId} (Crawl)` : titleAndId;
   }
 }
