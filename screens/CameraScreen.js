@@ -11,7 +11,7 @@ import {
 
 import GDrive from "react-native-google-drive-api-wrapper";
 
-import { Button, Icon, Text, Spinner } from "native-base";
+import { Button, Switch, Icon, Text, Spinner } from "native-base";
 
 import { storageRef, cluesRef } from "../fire";
 import layout from "../constants/Layout";
@@ -29,6 +29,7 @@ export default class CameraScreen extends React.Component {
     this.state = {
       hasCameraPermission: null,
       type: Camera.Constants.Type.front,
+      flashMode: Camera.Constants.FlashMode.auto,
       photo: null,
       sending: false
     };
@@ -105,14 +106,18 @@ export default class CameraScreen extends React.Component {
           style={{ flex: 1 }}
           type={this.state.type}
           ref={cam => (this.camera = cam)}
-          flashMode={Camera.Constants.FlashMode.auto}
-          autoFocus={Camera.Constants.AutoFocus.on}
+          flashMode={this.state.flashMode}
           zoom={0}
         >
           <View style={styles.topBar}>
             <View style={styles.topLeftButton}>
               <Button small light rounded onPress={this.flipCamera}>
                 <Icon name="camera" />
+              </Button>
+            </View>
+            <View style={styles.topRightButton}>
+              <Button small light rounded onPress={() => this.setState({flashMode: this.nextFlashMode()})}>
+                {this.flashIcon()}
               </Button>
             </View>
           </View>
@@ -218,6 +223,34 @@ export default class CameraScreen extends React.Component {
           : Camera.Constants.Type.back
     });
   };
+
+  nextFlashMode = () => {
+    switch (this.state.flashMode) {
+      case Camera.Constants.FlashMode.on:
+        return Camera.Constants.FlashMode.off;
+      case Camera.Constants.FlashMode.off:
+        return Camera.Constants.FlashMode.auto;
+      case Camera.Constants.FlashMode.auto:
+        return Camera.Constants.FlashMode.on;
+      default:
+        Alert.alert("Unknown flash mode");
+        return this.state.flashMode;
+    }
+  };
+
+  flashIcon = () => {
+    switch(this.state.flashMode) {
+      case Camera.Constants.FlashMode.on:
+        return <Icon name="flash"/>;
+      case Camera.Constants.FlashMode.off:
+        return <Icon name="flash-off"/>;
+      case Camera.Constants.FlashMode.auto:
+        return <Text>A</Text>;
+      default:
+        Alert.alert("Unknown flash mode");
+        return this.state.flashMode;
+    }
+  };
 }
 
 const styles = StyleSheet.create({
@@ -244,13 +277,18 @@ const styles = StyleSheet.create({
   topBar: {
     flex: 1,
     flexDirection: "row", //Default for react native is column
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     alignItems: "flex-start"
   },
 
   topLeftButton: {
     paddingTop: 40,
     paddingLeft: 20
+  },
+
+  topRightButton: {
+    paddingTop: 40,
+    paddingRight: 20
   },
 
   centerScreen: {
