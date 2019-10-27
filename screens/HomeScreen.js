@@ -14,6 +14,27 @@ import UserHeader from "../components/UserHeader";
 
 import GDrive from "react-native-google-drive-api-wrapper";
 
+const RED = "#ff0000";
+const BLUE = "#0000ff";
+
+const CRAWL_COLORS = [
+  "#45B8AC",
+  "#88B04B",
+  "#FFDD33",
+  "#955251",
+  "#013220",
+  "#B565A7",
+  "#998000",
+  "#6B5B95",
+  "#FF6F61",
+  "#F7CAC9",
+];
+
+// Never expected to be used
+// If it is it means we have over 10 clue lists
+// in which case we have bigger problems
+const OVERFLOW_COLOR = "#000000";
+
 // Controls initial zoom of the map
 const LATITUDE_DELTA = 0.06;
 const LONGITUDE_DELTA = 0.06;
@@ -230,15 +251,38 @@ export default class HomeScreen extends React.Component {
         );
     }
 
+    const crawlColors = this.makeCrawlColorMap();
     return cluesToShow.map((clue, index) => {
       return (
         <Clue
           clue={clue}
           key={index}
+          color={this.clueColor(clue, crawlColors)}
           onCluePress={this.makeOnCluePress(clue)}
         />
       );
     });
+  }
+
+  clueColor(clue, crawlColors) {
+    if (clue.completed) {
+      return BLUE;
+    }
+    else if (clue.inCrawl) {
+      return crawlColors[clue.clueListId]
+    }
+    return RED;
+  }
+
+  makeCrawlColorMap() {
+    crawlColors = {};
+    crawlClueLists = this.state.clues.filter(c => c.inCrawl).map(c => c.clueListId);
+    listIds = Array.from(new Set(crawlClueLists)).sort();
+    listIds.forEach((listId, idx) => {
+      crawlColors[listId] = idx < CRAWL_COLORS.length ? CRAWL_COLORS[idx] : OVERFLOW_COLOR;
+    });
+
+    return crawlColors;
   }
 
   // Closes over the clue so the clue's press callback will have access to it

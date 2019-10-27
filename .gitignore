@@ -4,3 +4,4 @@ node_modules/**/*
 properties.js
 GoogleService-Info.plist
 app.json
+package-lock.json

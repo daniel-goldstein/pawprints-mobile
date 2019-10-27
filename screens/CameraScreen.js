@@ -105,7 +105,8 @@ export default class CameraScreen extends React.Component {
           style={{ flex: 1 }}
           type={this.state.type}
           ref={cam => (this.camera = cam)}
-          flashMode={Camera.Constants.FlashMode.on}
+          flashMode={Camera.Constants.FlashMode.auto}
+          autoFocus={Camera.Constants.AutoFocus.on}
           zoom={0}
         >
           <View style={styles.topBar}>
@@ -136,7 +137,6 @@ export default class CameraScreen extends React.Component {
       CameraRoll.saveToCameraRoll(photo.uri, "photo");
 
       const clue = this.props.navigation.getParam("clue");
-      //await CameraScreen.uploadToFirebase(photo.uri, clue.clueId);
       await CameraScreen.uploadToGoogleDrive(photo, clue);
       await CameraScreen.markClueCompleted(clue.key);
 
@@ -153,13 +153,6 @@ export default class CameraScreen extends React.Component {
   toggleSending() {
     this.setState({ sending: !this.state.sending });
   }
-
-  // static async uploadToFirebase(photoUri, clueId) {
-  //   const photoFromUri = await fetch(photoUri);
-  //   const photoBlob = await photoFromUri.blob();
-
-  //   return storageRef.child(clueId).put(photoBlob);
-  // }
 
   static async uploadToGoogleDrive(photo, clue) {
     if (!GDrive.isInitialized()) {
@@ -188,7 +181,6 @@ export default class CameraScreen extends React.Component {
     // User feedback on success
     // If we have an out response
     if (out) {
-      // If response was 200
       if (out.status === 200) {
         Alert.alert(`Uploaded ${clueListId}${clueNum}`);
       } else {
