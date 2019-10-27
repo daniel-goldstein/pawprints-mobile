@@ -31,7 +31,7 @@ const CRAWL_COLORS = [
   "#998000",
   "#6B5B95",
   "#FF6F61",
-  "#F7CAC9",
+  "#F7CAC9"
 ];
 
 // Never expected to be used
@@ -62,7 +62,7 @@ export default class HomeScreen extends React.Component {
       region: null,
       clueVisibilitySelectedIndex: 0,
       myName: null,
-      hasCameraRollPermission: null,
+      hasCameraRollPermission: null
     };
 
     this._requestCameraRollPermission();
@@ -290,19 +290,21 @@ export default class HomeScreen extends React.Component {
   clueColor(clue, crawlColors) {
     if (clue.completed) {
       return BLUE;
-    }
-    else if (clue.inCrawl) {
-      return crawlColors[clue.clueListId]
+    } else if (clue.inCrawl) {
+      return crawlColors[clue.clueListId];
     }
     return RED;
   }
 
   makeCrawlColorMap() {
     crawlColors = {};
-    crawlClueLists = this.state.clues.filter(c => c.inCrawl).map(c => c.clueListId);
+    crawlClueLists = this.state.clues
+      .filter(c => c.inCrawl)
+      .map(c => c.clueListId);
     listIds = Array.from(new Set(crawlClueLists)).sort();
     listIds.forEach((listId, idx) => {
-      crawlColors[listId] = idx < CRAWL_COLORS.length ? CRAWL_COLORS[idx] : OVERFLOW_COLOR;
+      crawlColors[listId] =
+        idx < CRAWL_COLORS.length ? CRAWL_COLORS[idx] : OVERFLOW_COLOR;
     });
 
     return crawlColors;
@@ -345,6 +347,10 @@ export default class HomeScreen extends React.Component {
       base64: true,
       aspect: [4, 3]
     });
+    // Some feedback for our lovely users.
+    Alert.alert(
+      "Processing Upload from Camera Roll. Please WAIT for confirmation."
+    );
 
     if (!photo.cancelled) {
       await CameraScreen.uploadToGoogleDrive(photo, clue);
