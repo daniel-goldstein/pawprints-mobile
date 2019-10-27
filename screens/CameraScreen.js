@@ -11,7 +11,7 @@ import {
 
 import GDrive from "react-native-google-drive-api-wrapper";
 
-import { Button, Switch, Icon, Text, Spinner } from "native-base";
+import { Button, Icon, Text, Spinner } from "native-base";
 
 import { storageRef, cluesRef } from "../fire";
 import layout from "../constants/Layout";
