@@ -373,10 +373,4 @@ export default class HomeScreen extends React.Component {
 
 const styles = {
   headerStyle: { position: "absolute", top: 50, left: 20 },
-
-  centerScreen: {
-    position: "absolute",
-    paddingTop: layout.window.height / 2,
-    paddingLeft: layout.window.width / 2
-  }
 };
