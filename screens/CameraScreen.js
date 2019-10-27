@@ -106,6 +106,7 @@ export default class CameraScreen extends React.Component {
           style={{ flex: 1 }}
           type={this.state.type}
           ref={cam => (this.camera = cam)}
+          autoFocus={Camera.Constants.AutoFocus.on}
           flashMode={this.state.flashMode}
           zoom={0}
         >
