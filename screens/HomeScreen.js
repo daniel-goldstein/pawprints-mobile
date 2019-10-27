@@ -1,6 +1,6 @@
 import React from "react";
-import { Alert, View } from "react-native";
-import { MapView, Font } from "expo";
+import { Alert, View, Text } from "react-native";
+import { MapView, Font, Permissions } from "expo";
 
 import { ButtonGroup } from "react-native-elements";
 
@@ -13,6 +13,10 @@ import AuthScreen from "./AuthScreen";
 import UserHeader from "../components/UserHeader";
 
 import GDrive from "react-native-google-drive-api-wrapper";
+import * as ImagePicker from "expo-image-picker";
+import CameraScreen from "./CameraScreen";
+
+import layout from "../constants/Layout";
 
 const RED = "#ff0000";
 const BLUE = "#0000ff";
@@ -57,8 +61,11 @@ export default class HomeScreen extends React.Component {
       hunters: [],
       region: null,
       clueVisibilitySelectedIndex: 0,
-      myName: null
+      myName: null,
+      hasCameraRollPermission: null,
     };
+
+    this._requestCameraRollPermission();
   }
 
   _logout = () => {
@@ -108,6 +115,11 @@ export default class HomeScreen extends React.Component {
     }
   }
 
+  async _requestCameraRollPermission() {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    this.setState({ hasCameraRollPermission: status === "granted" });
+  }
+
   render() {
     const {
       userGivenName,
@@ -127,6 +139,17 @@ export default class HomeScreen extends React.Component {
             doRefresh={isTokenAboutToExpire}
             setUser={this._setUser}
           />
+        </View>
+      );
+    }
+
+    // Camera Roll Permissions
+    if (!this.state.hasCameraRollPermission) {
+      return (
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text>Requesting Camera Roll Permission...</Text>
         </View>
       );
     }
@@ -294,6 +317,10 @@ export default class HomeScreen extends React.Component {
         [
           { text: "Take Photo", onPress: () => this.pushCamera(clue) },
           {
+            text: "Submit Photo from Camera Roll",
+            onPress: () => this.submitFromCameraRoll(clue)
+          },
+          {
             text: clue.completed ? "Mark Incomplete" : "Mark Complete",
             onPress: () => HomeScreen.toggleComplete(clue)
           },
@@ -310,6 +337,19 @@ export default class HomeScreen extends React.Component {
 
   pushCamera = clue => {
     this.props.navigation.push("Camera", { clue: clue });
+  };
+
+  submitFromCameraRoll = async clue => {
+    const photo = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      base64: true,
+      aspect: [4, 3]
+    });
+
+    if (!photo.cancelled) {
+      await CameraScreen.uploadToGoogleDrive(photo, clue);
+      await CameraScreen.markClueCompleted(clue.key);
+    }
   };
 
   static async toggleComplete(clue) {
