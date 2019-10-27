@@ -64,6 +64,8 @@ export default class HomeScreen extends React.Component {
       myName: null,
       hasCameraRollPermission: null,
     };
+
+    this._requestCameraRollPermission();
   }
 
   _logout = () => {
@@ -143,8 +145,6 @@ export default class HomeScreen extends React.Component {
 
     // Camera Roll Permissions
     if (!this.state.hasCameraRollPermission) {
-      this._requestCameraRollPermission();
-
       return (
         <View
           style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
