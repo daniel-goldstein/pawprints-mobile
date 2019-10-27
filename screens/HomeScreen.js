@@ -372,5 +372,5 @@ export default class HomeScreen extends React.Component {
 }
 
 const styles = {
-  headerStyle: { position: "absolute", top: 50, left: 20 },
+  headerStyle: { position: "absolute", top: 50, left: 20 }
 };
