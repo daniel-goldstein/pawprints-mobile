@@ -210,7 +210,7 @@ export default class AuthScreen extends React.Component {
             <AntDesign name="google" size={70} color="black" />
           </View>
         </TouchableOpacity>
-        <Text style={{ paddingTop: 10 }}>version 9</Text>
+        <Text style={{ paddingTop: 10 }}>PawPrints</Text>
       </View>
     );
   }
