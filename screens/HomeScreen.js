@@ -52,7 +52,7 @@ export default class HomeScreen extends React.Component {
     super(props);
 
     this.state = {
-      userGivenName: null, // Firstname from google auth
+      userGivenName: null, // NAME from google auth
       accessToken: null, // Google Token
       refreshToken: null, // refresh Token
       accessTokenExpirationDate: null,
