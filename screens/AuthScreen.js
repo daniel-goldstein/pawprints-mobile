@@ -132,7 +132,7 @@ export default class AuthScreen extends React.Component {
 
     if (type === "success") {
       // Store in async data for later.
-      await this._storeData("userGivenName", user.givenName);
+      await this._storeData("userGivenName", user.name);
       await this._storeData("accessToken", accessToken);
       await this._storeData("refreshToken", refreshToken);
       await this._storeData(
@@ -141,17 +141,9 @@ export default class AuthScreen extends React.Component {
       );
 
       // Call parent setUser function
-      setUser(
-        user.givenName,
-        accessToken,
-        refreshToken,
-        new Date().toISOString()
-      );
+      setUser(user.name, accessToken, refreshToken, new Date().toISOString());
 
-      console.log(
-        "Received new data from login and set for user",
-        user.givenName
-      );
+      console.log("Received new data from login and set for user", user.name);
     } else {
       console.log("Error!"); //TODO handle this.
     }
