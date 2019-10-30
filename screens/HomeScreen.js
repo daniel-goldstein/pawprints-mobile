@@ -25,19 +25,19 @@ const CRAWL_COLORS = [
   "#45B8AC",
   "#88B04B",
   "#FFDD33",
-  "#955251",
   "#013220",
+  "orange",
   "#B565A7",
-  "#998000",
-  "#6B5B95",
-  "#FF6F61",
-  "#F7CAC9"
+  "linen",
+  "indigo",
+  "green",
+  "coral"
 ];
 
 // Never expected to be used
 // If it is it means we have over 10 clue lists
 // in which case we have bigger problems
-const OVERFLOW_COLOR = "#000000";
+const OVERFLOW_COLOR = "yellow";
 
 // Controls initial zoom of the map
 const LATITUDE_DELTA = 0.06;
@@ -276,11 +276,13 @@ export default class HomeScreen extends React.Component {
 
     const crawlColors = this.makeCrawlColorMap();
     return cluesToShow.map((clue, index) => {
+      const clueKey = `${clue.clueListId}${clue.clueNum}`
+      const clueColor = this.clueColor(clue, crawlColors);
       return (
         <Clue
+          key={`${clueKey}-${clueColor}`} // bug report that key needs to change for color to change on android
           clue={clue}
-          key={index}
-          color={this.clueColor(clue, crawlColors)}
+          color={clueColor}
           onCluePress={this.makeOnCluePress(clue)}
         />
       );
