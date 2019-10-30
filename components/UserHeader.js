@@ -18,7 +18,7 @@ export default UserHeader = props => {
     <View>
       <Text
         onPress={() => _clearSession(triggerLogout)}
-      >{`Hunter: ${userGivenName}\n(Tap To Logout) \nv11`}</Text>
+      >{`Hunter: ${userGivenName}\n(Tap To Logout) \nv12`}</Text>
     </View>
   );
 };
