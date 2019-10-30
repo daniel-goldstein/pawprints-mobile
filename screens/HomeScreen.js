@@ -22,16 +22,16 @@ const RED = "#ff0000";
 const BLUE = "#0000ff";
 
 const CRAWL_COLORS = [
-  "#45B8AC",
-  "#88B04B",
-  "#FFDD33",
-  "#955251",
-  "#013220",
-  "#B565A7",
-  "#998000",
-  "#6B5B95",
-  "#FF6F61",
-  "#F7CAC9"
+  "#45B8AC", // A
+  "#88B04B", // B
+  "#FFDD33", // C
+  "#013220", // D
+  "#955251", // E DOES NOT WORK
+  "#B565A7", // F
+  "#998000", // G
+  "#6B5B95", // H
+  "#FF6F61", // I
+  "#F7CAC9"  // J
 ];
 
 // Never expected to be used
