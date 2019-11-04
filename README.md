@@ -2,7 +2,7 @@
 
 Mobile app for tracking clues during Husky Hunt
 
-![zoom-in](/screenshots/zoom-in.PNG)
+![zoom-in](/screenshots/zoom-in.PNG | width=100)
 
 ![zoom-out](/screenshots/zoom-out.PNG)
 
