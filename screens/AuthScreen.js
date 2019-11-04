@@ -91,7 +91,7 @@ export default class AuthScreen extends React.Component {
 
   initAsync = async () => {
     // Get the setter from parents
-    const { setUser, doRefresh } = this.props;
+    const { setUser, doRefresh, setupLocationPosting } = this.props;
 
     // Check if we have the user in async storage.
     const maybeUser = await this._retrieveData("userGivenName");
@@ -114,13 +114,15 @@ export default class AuthScreen extends React.Component {
           maybeRefreshToken,
           maybeAccessTokenExpirationDate
         );
+        // Location posting setup HERE! (1)
+        setupLocationPosting();
       }
     }
   };
 
   getNewToken = async () => {
     // Get the setter from parents
-    const { setUser } = this.props;
+    const { setUser, setupLocationPosting } = this.props;
 
     // Obtain access token from Expo's Google API
     const { type, accessToken, refreshToken, user } = await Google.logInAsync({
@@ -142,6 +144,9 @@ export default class AuthScreen extends React.Component {
 
       // Call parent setUser function
       setUser(user.name, accessToken, refreshToken, new Date().toISOString());
+
+      // Location posting setup HERE! (2)
+      setupLocationPosting();
 
       console.log("Received new data from login and set for user", user.name);
     } else {

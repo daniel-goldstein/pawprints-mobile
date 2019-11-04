@@ -138,6 +138,7 @@ export default class HomeScreen extends React.Component {
           <AuthScreen
             doRefresh={isTokenAboutToExpire}
             setUser={this._setUser}
+            setupLocationPosting={this.setupLocationPosting}
           />
         </View>
       );
@@ -189,7 +190,6 @@ export default class HomeScreen extends React.Component {
     this.fetchClueData();
     this.fetchHunterData();
     this.setRegion();
-    this.setupLocationPosting();
   }
 
   fetchClueData() {
@@ -235,13 +235,13 @@ export default class HomeScreen extends React.Component {
     });
   }
 
-  setupLocationPosting() {
-    this.uploadLocation(); //Post location on application start as well
+  setupLocationPosting = async () => {
+    await this.uploadLocation(); //Post location on application start as well
     navigator.geolocation.watchPosition(this.uploadLocation);
-  }
+  };
 
   uploadLocation = async () => {
-    let username = this.state.userGivenName;
+    const username = this.state.userGivenName; // State isn't set by this time this is called on ANDROID
     if (username) {
       const currentLocation = await this.getCurrentLocation();
       const hunterInfo = {
@@ -276,7 +276,7 @@ export default class HomeScreen extends React.Component {
 
     const crawlColors = this.makeCrawlColorMap();
     return cluesToShow.map((clue, index) => {
-      const clueKey = `${clue.clueListId}${clue.clueNum}`
+      const clueKey = `${clue.clueListId}${clue.clueNum}`;
       const clueColor = this.clueColor(clue, crawlColors);
       return (
         <Clue
