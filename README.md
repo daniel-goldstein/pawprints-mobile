@@ -11,6 +11,5 @@ Mobile app for tracking clues during Husky Hunt
 </kbd>
 </p>
 
-## Development
-
-Clone the directory and obtain the properties.js with firebase configurations to drop in the root directory. Then get hacking!
+## Archiving Note
+Pawprints served the Chicken Louttle team well in our winning year at Disney Husky Hunt 2019! Officially retired, it is left here as a learning resource for any future teams who want to create their own tools for solving Husky Hunt's hardest problems.
